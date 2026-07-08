@@ -1,5 +1,5 @@
-# Termify 🎧
-Um cliente de terminal (TUI) para controlar sua conta Spotify, com uma interface inspirada em players de música de linha de comando clássicos.
+# Riff 🎧
+Um cliente de terminal (TUI) para controlar sua conta do Spotify, com uma interface inspirada em players de música de linha de comando clássicos.
 
 Este projeto nasceu de uma conversa sobre o [`meloid`](https://github.com/DexerMatters/meloid), um player de música em Haskell feito por um conhecido, para arquivos locais no Linux. O Riff pega essa mesma estética — painéis de álbuns, faixas, fila de reprodução, barras de progresso em modo texto — e aplica ao controle da sua conta do Spotify no Windows.
 
