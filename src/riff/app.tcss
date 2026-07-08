@@ -1,0 +1,43 @@
+/* Estética Web 1.0 / Neo-Brutalismo: bordas retas e grossas, cores chapadas,
+   sem gradiente, alto contraste. Ver conversa/ADR sobre direção visual. */
+
+Screen {
+    background: #0d0d0d;
+    color: #e8e8e0;
+}
+
+#now-playing {
+    border: heavy #f5f0e6;
+    padding: 1 2;
+    margin: 1;
+}
+
+#status-bar {
+    background: #f5e400;
+    color: #0d0d0d;
+    text-style: bold;
+    padding: 0 1;
+    width: 100%;
+}
+
+#track-title {
+    text-style: bold;
+    margin-top: 1;
+}
+
+#track-meta {
+    color: #a8a89a;
+    margin-bottom: 1;
+}
+
+ProgressBar {
+    margin-bottom: 1;
+}
+
+ProgressBar > .bar--bar {
+    color: #5ecf8a;
+}
+
+Footer {
+    background: #0d0d0d;
+}

@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "riff"
+version = "0.1.0"
+description = "Cliente de terminal (TUI) para controlar sua conta Spotify via Web API"
+authors = ["Seu Nome <seu_email@exemplo.com>"]
+readme = "README.md"
+packages = [{ include = "riff", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+textual = "^8.2"
+spotipy = "^2.24"
+python-dotenv = "^1.0"
+
+[tool.poetry.scripts]
+riff = "riff.app:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

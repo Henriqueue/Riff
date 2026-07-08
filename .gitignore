@@ -1,0 +1,13 @@
+# Ambiente / dependências
+.venv/
+__pycache__/
+*.pyc
+dist/
+
+# Segredos e sessão do Spotify (ADR-006: cache local do Spotipy)
+.env
+.riff_cache
+
+# Editor
+.vscode/
+.idea/
