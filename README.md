@@ -3,9 +3,13 @@ Um cliente de terminal (TUI) para controlar sua conta do Spotify, com uma interf
 
 Este projeto nasceu de uma conversa sobre o [`meloid`](https://github.com/DexerMatters/meloid), um player de música em Haskell feito por um conhecido, para arquivos locais no Linux. O Riff pega essa mesma estética — painéis de álbuns, faixas, fila de reprodução, barras de progresso em modo texto — e aplica ao controle da sua conta do Spotify no Windows.
 
+![alt text](image-1.png)
+
 ## O que é e para que serve
 
 O Riff **não é** um player de áudio propriamente dito. Ele é um **controle remoto em modo texto** para o Spotify: uma interface de terminal bonita e rápida para ver o que está tocando, navegar por álbuns e playlists, gerenciar a fila e controlar a reprodução (play/pause/skip/volume/seek), sem precisar abrir a janela pesada do app oficial ou do navegador.
+
+![alt text](image.png)
 
 Quem de fato reproduz o áudio continua sendo o **app oficial da Spotify** (ou qualquer dispositivo Spotify Connect logado na sua conta) — o Riff só envia comandos pra ele através da API oficial. Isso significa que:
 
@@ -108,6 +112,6 @@ Este projeto usa a Spotify Web API sob os [Termos de Uso para Desenvolvedores da
 
 ## Extras
 
-Designs descartados ou de inspiração. Talvez sejam utilizados para uma função de novos temas, mas quem sabe? Bleh ( ͡❛ ෴ ͡❛)
-[alt text](image.png)
+Designs PROTIPAIS ou de inspiração. Talvez sejam utilizados para uma função de novos temas, mas quem sabe? Bleh ( ͡❛ ෴ ͡❛)
+![alt text](image.png)
 ![alt text](image-1.png)
