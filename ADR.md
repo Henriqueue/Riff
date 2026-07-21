@@ -151,7 +151,11 @@ Poetry. Cuida de venv, lockfile (poetry.lock) e empacotamento num só lugar — 
 
 ---
 
+ADR-009: Repaginação visual — de neo-brutalismo para "terminal discreto"
+Reverter a direção neo-brutalista (ADR original de identidade visual) após teste prático mostrar que bordas grossas e blocos de cor saturada cansavam na leitura contínua. Nova direção: paleta escura arroxeada de baixa saturação, hierarquia por peso tipográfico (não por cor/borda), líderes pontilhados no estilo terminal clássico, e pílulas de rótulo como único elemento de cor saturada na tela.
 ## Projetos relacionados (prior art)
+
+---
 
 - **[meloid](https://github.com/DexerMatters/meloid)** — player de música em Haskell, foco em arquivos locais via MPD, com renderização de capa de álbum em terminais compatíveis (Kitty, Ghostty, iTerm). Fonte de inspiração visual/estética direta deste projeto.
 - **[spotify-tui](https://github.com/Rigellute/spotify-tui)** — cliente de terminal em Rust que controla o Spotify via Web API, mesmo modelo arquitetural adotado aqui (controle remoto, não reprodução própria).
