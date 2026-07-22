@@ -1,117 +1,125 @@
 # Riff 🎧
-Um cliente de terminal (TUI) para controlar sua conta do Spotify, com uma interface inspirada em players de música de linha de comando clássicos.
 
-Este projeto nasceu de uma conversa sobre o [`meloid`](https://github.com/DexerMatters/meloid), um player de música em Haskell feito por um conhecido, para arquivos locais no Linux. O Riff pega essa mesma estética — painéis de álbuns, faixas, fila de reprodução, barras de progresso em modo texto — e aplica ao controle da sua conta do Spotify no Windows.
+A terminal client (TUI) for controlling your Spotify account, with an interface inspired by classic command-line music players.
 
-![alt text](image-1.png)
+This project started from a conversation about [`meloid`](https://github.com/DexerMatters/meloid), a Haskell music player built by a friend for local files on Linux. Riff borrows that same spirit — album panels, track listings, playback queue, text-mode progress bars — and applies it to controlling a Spotify account on Windows.
 
-## O que é e para que serve
+![Riff running in the terminal, showing the now-playing panel](image-1.png)
 
-O Riff **não é** um player de áudio propriamente dito. Ele é um **controle remoto em modo texto** para o Spotify: uma interface de terminal bonita e rápida para ver o que está tocando, navegar por álbuns e playlists, gerenciar a fila e controlar a reprodução (play/pause/skip/volume/seek), sem precisar abrir a janela pesada do app oficial ou do navegador.
+## What it is and what it's for
 
-![alt text](image.png)
+Riff **is not** an audio player in the traditional sense. It's a **text-mode remote control** for Spotify: a fast, good-looking terminal interface to see what's playing, browse albums and playlists, manage the queue, and control playback (play/pause/skip/volume/seek) — without opening the heavier official app or a browser tab.
 
-Quem de fato reproduz o áudio continua sendo o **app oficial da Spotify** (ou qualquer dispositivo Spotify Connect logado na sua conta) — o Riff só envia comandos pra ele através da API oficial. Isso significa que:
+![Riff's album and track browsing panels](image.png)
 
-- ✅ Seu histórico de reprodução continua sendo registrado normalmente;
-- ✅ Seus amigos continuam vendo sua atividade recente (Friend Activity);
-- ✅ Os minutos escutados continuam contando para o seu Spotify Wrapped e para a "cápsula do tempo" de fim de ano;
-- ✅ Tudo dentro dos Termos de Uso da Spotify — nenhuma engenharia reversa, nenhuma decodificação de áudio por fora do app oficial.
+The audio itself is still played by the **official Spotify app** (or any Spotify Connect device signed in to your account) — Riff only sends commands to it through the official API. This means:
 
-## Como funciona (visão geral)
+- ✅ Your listening history keeps being recorded normally;
+- ✅ Your friends still see your recent activity (Friend Activity);
+- ✅ Minutes listened still count toward your Spotify Wrapped and end-of-year "time capsule";
+- ✅ Everything stays within Spotify's Terms of Service — no reverse engineering, no audio decoding outside the official app.
+
+## How it works (overview)
 
 ```
-┌──────────── ──┐        comandos (play/pause/next/seek/volume)      ┌────────────────────┐
-│   Riff        │ ───────────────────────────────────────────────►   │  Spotify Web API   │
-│  (TUI local) │                                                     │   (Player API)     │
-└──────────────┘ ◄─────────────────────────────────────────────────  └────────┬───────────┘
-                     estado atual (faixa, fila, progresso, volume)             │
-                                                                                ▼
-                                                                  ┌────────────────────────┐
-                                                                  │ App oficial do Spotify │
-                                                                  │  (ou dispositivo       │
-                                                                  │   Spotify Connect)     │
-                                                                  │  → decodifica e toca   │
-                                                                  │    o áudio de fato     │
-                                                                  └────────────────────────┘
+┌──────────────┐       commands (play/pause/next/seek/volume)        ┌────────────────────┐
+│     Riff     │ ───────────────────────────────────────────────►    │  Spotify Web API   │
+│  (local TUI) │                                                      │   (Player API)     │
+└──────────────┘ ◄─────────────────────────────────────────────────   └─────────┬──────────┘
+                    current state (track, queue, progress, volume)              │
+                                                                                  ▼
+                                                                  ┌─────────────────────────┐
+                                                                  │ Official Spotify app     │
+                                                                  │ (or a Spotify Connect    │
+                                                                  │  device)                 │
+                                                                  │  → actually decodes and  │
+                                                                  │    plays the audio       │
+                                                                  └─────────────────────────┘
 ```
 
-1. O Riff autentica o usuário via OAuth 2.0 (Authorization Code + PKCE) contra a Spotify.
-2. A cada ação do usuário (apertar espaço, seta, etc.), o Riff chama o endpoint correspondente da Web API (`/me/player/play`, `/me/player/next`, `/me/player/volume`, ...).
-3. Em paralelo, o Riff consulta periodicamente o estado atual de reprodução (`/me/player/currently-playing`, `/me/player/queue`) e atualiza a tela.
-4. Quem decodifica e reproduz o som é sempre um dispositivo já autenticado na conta (o app oficial aberto, minimizado, ou um alto-falante Connect) — nunca o próprio Riff.
+1. Riff authenticates the user via OAuth 2.0 (Authorization Code + PKCE) against Spotify.
+2. On each user action (pressing space, an arrow key, etc.), Riff calls the corresponding Web API endpoint (`/me/player/play`, `/me/player/next`, `/me/player/volume`, ...).
+3. In parallel, Riff periodically polls the current playback state (`/me/player/currently-playing`, `/me/player/queue`) and updates the screen.
+4. The device that actually decodes and plays the sound is always one already authenticated on the account (the official app, open or minimized, or a Connect speaker) — never Riff itself.
 
-## Tecnologias e por que foram escolhidas
+## Tech stack and rationale
 
-| Tecnologia | Papel | Por quê |
+| Technology | Role | Why |
 |---|---|---|
-| **Python 3** | Linguagem principal | Já é dominada pelo autor; ecossistema maduro para HTTP, OAuth e TUI |
-| **[Textual](https://textual.textualize.io/)** | Framework de interface de terminal | Framework moderno de TUI, com widgets prontos (tabelas, listas, barras de progresso, painéis dockados) que mapeiam bem para a estética de múltiplos painéis buscada aqui; ativamente mantido |
-| **[Spotipy](https://spotipy.readthedocs.io/)** | Cliente da Spotify Web API | Biblioteca de facto da comunidade Python para a Web API; já resolve o fluxo OAuth (incluindo PKCE) e expõe os endpoints do Player API de forma tipada e simples |
-| **Spotify Web API (Player API)** | Backend real de reprodução | Único caminho **legal e oficial** para controlar playback programaticamente sem reimplementar decodificação de áudio (ver ADR-001) |
+| **Python 3** | Main language | Already familiar to the author; mature ecosystem for HTTP, OAuth, and TUIs |
+| **[Textual](https://textual.textualize.io/)** | Terminal UI framework | Modern, actively maintained TUI framework with ready-made widgets (tables, lists, progress bars, dockable panels) that map well to the multi-panel aesthetic this project is going for |
+| **[Spotipy](https://spotipy.readthedocs.io/)** | Spotify Web API client | The de facto Python library for the Web API; already handles the OAuth flow (including PKCE) and exposes Player API endpoints in a simple, typed way |
+| **Spotify Web API (Player API)** | Actual playback backend | The only **legal, official** way to control playback programmatically without reimplementing audio decoding (see ADR-001) |
 
-Detalhes de cada decisão e alternativas descartadas estão documentados em [`ADR.md`](./ADR.md).✌( ͡❛ ෴ ͡❛)✌
+Each decision, along with the alternatives that were considered and dropped, is documented in [`ADR.md`](./ADR.md).
 
-## Requisitos
+## Requirements
 
 - Windows 10/11
 - Python 3.11+
-- Conta **Spotify Premium** (obrigatória para os endpoints de controle de reprodução da Web API)
-- App oficial do Spotify (desktop ou mobile) instalado e logado — é ele quem reproduz o áudio
-- Um app registrado no [Spotify for Developers Dashboard](https://developer.spotify.com/dashboard) (gratuito, em Development Mode, uso pessoal)
+- **Spotify Premium** account (required by the Web API's playback control endpoints)
+- Official Spotify app (desktop or mobile) installed and signed in — it's the one actually playing the audio
+- An app registered on the [Spotify for Developers Dashboard](https://developer.spotify.com/dashboard) (free, Development Mode, personal use)
 
-## Instalação
+## Installation
 
 ```bash
 git clone https://github.com/HenriqueUE/Riff.git
 cd Riff
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
+poetry install
 ```
 
-Configure suas credenciais da Spotify (obtidas no Developer Dashboard) em um arquivo `.env`:
+Set up your Spotify credentials (from the Developer Dashboard) in a `.env` file — you can copy `.env.example` as a starting point:
+
+```bash
+copy .env.example .env    # Windows
+# cp .env.example .env    # Linux/macOS
+```
 
 ```
-SPOTIFY_CLIENT_ID=seu_client_id
+SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_REDIRECT_URI=http://127.0.0.1:8888/callback
 ```
 
-E rode:
+Then run:
 
 ```bash
-python -m termify
+poetry run riff
 ```
 
-Na primeira execução, o navegador vai abrir pedindo login/consentimento na Spotify. Depois disso, a sessão fica salva localmente e não é necessário logar de novo.
+On first run, your browser will open asking you to log in/consent on Spotify. After that, the session is saved locally and you won't need to log in again.
 
-## Funcionalidades
+## Features
 
-- [ ] Autenticação OAuth 2.0 (Authorization Code + PKCE)
-- [ ] Painel "tocando agora" (capa, faixa, artista, álbum, progresso)
-- [ ] Fila de reprodução (visualizar e reordenar)
-- [ ] Navegação por playlists e álbuns salvos
-- [ ] Controles de reprodução (play/pause/next/previous/seek/volume)
-- [ ] Atalhos de teclado estilo player de terminal (setas, espaço, `q` para sair, etc.)
-- [ ] Histórico recente dentro do próprio TUI
-- [ ] Troca de dispositivo ativo (transferir playback entre PC/celular/alto-falante)
+- [x] OAuth 2.0 authentication (Authorization Code + PKCE)
+- [x] "Now playing" panel (track, artist, album, progress)
+- [x] Playback controls (play/pause/next/previous)
+- [ ] Volume control
+- [ ] Playback queue (view and reorder)
+- [ ] Browsing playlists and saved albums
+- [ ] Album cover art rendered in-terminal
+- [ ] Dynamic accent color derived from album art
+- [ ] Seek control
+- [ ] Recent listening history inside the TUI
+- [ ] Active device switching (transfer playback between PC/phone/speaker)
 
-## Projetos relacionados
+## Related projects
 
-- [**meloid**](https://github.com/DexerMatters/meloid) — player de música local em Haskell, inspiração visual direta deste projeto.
-- [**spotify-tui**](https://github.com/Rigellute/spotify-tui) — cliente de terminal em Rust com a mesma abordagem de controle remoto via Web API.
-- [**ncspot**](https://github.com/hrkfdn/ncspot) — cliente de terminal em Rust; citado apenas como referência de mercado (usa protocolo não-oficial para reproduzir áudio diretamente, fora do escopo deste projeto).
+- [**meloid**](https://github.com/DexerMatters/meloid) — local music player in Haskell; the direct visual inspiration for this project.
+- [**spotify-tui**](https://github.com/Rigellute/spotify-tui) — Rust terminal client using the same remote-control-via-Web-API approach.
+- [**ncspot**](https://github.com/hrkfdn/ncspot) — Rust terminal client; mentioned only as a market reference (it uses an unofficial protocol to play audio directly, which is outside this project's scope — see ADR-001).
 
-## Licença
+## License
 
 MIT.
 
-## Aviso
+## Disclaimer
 
-Este projeto usa a Spotify Web API sob os [Termos de Uso para Desenvolvedores da Spotify](https://developer.spotify.com/policy). Não é afiliado, endossado ou patrocinado pela Spotify AB.
+This project uses the Spotify Web API under the [Spotify Developer Terms of Service](https://developer.spotify.com/policy). It is not affiliated with, endorsed by, or sponsored by Spotify AB.
 
 ## Extras
 
-Designs PROTIPAIS ou de inspiração. Talvez sejam utilizados para uma função de novos temas, mas quem sabe? Bleh ( ͡❛ ෴ ͡❛)
-![alt text](image.png)
-![alt text](image-1.png)
+Visual references and inspiration boards. These might eventually feed into a theming feature — or might not, we'll see.
+
+![Reference mood board 1](image.png)
+![Reference mood board 2](image-1.png)
